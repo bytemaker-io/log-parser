@@ -1,10 +1,9 @@
 name: Rust CI
 
 on:
+  workflow_dispatch:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: [ master ]
   release:
     types: [created]
 
@@ -18,38 +17,36 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
+    - name: Build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
 
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+    - name: Archive
+      run: |
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          cd ./target/release/
+          7z a -tzip ../../../launcher-${{ matrix.os }}.zip ./launcher.exe
+        else
+          cd ./target/release/
+          zip -r ../../../launcher-${{ matrix.os }}.zip ./launcher
+        fi
 
-      - name: Archive
-        run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            cd ./target/release/
-            7z a -tzip ../../../launcher-${{ matrix.os }}.zip ./launcher.exe
-          else
-            cd ./target/release/
-            zip -r ../../../launcher-${{ matrix.os }}.zip ./launcher
-          fi
-
-      - name: Upload Release Asset
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./launcher-${{ matrix.os }}.zip
-          asset_name: launcher-${{ matrix.os }}.zip
-          asset_content_type: application/zip
+    - name: Upload Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./launcher-${{ matrix.os }}.zip
+        asset_name: launcher-${{ matrix.os }}.zip
+        asset_content_type: application/zip
