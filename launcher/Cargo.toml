@@ -3,6 +3,12 @@ name = "launcher"
 version = "0.1.0"
 edition = "2021"
 repository= "https://github.com/bytemaker-io/log-parser"
+authors = ["Graydon Hoare", "Fnu Lnu <no-reply@rust-lang.org>"]
+[package.metadata.wix]
+upgrade-guid = "8DE78EBC-FEF2-4F45-AD51-ED03F261BE6E"
+path-guid = "5181C896-8BD8-411A-AE2B-F6A5C425E330"
+license = false
+eula = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
