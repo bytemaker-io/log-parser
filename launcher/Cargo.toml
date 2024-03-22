@@ -10,3 +10,6 @@ clap = {version="4", features=["derive","color"]}
 
 tracing-subscriber = "0.3.18"
 tracing = "0.1.40"
+tokio = { version = "1.36.0",features = ["full"] }
+colored = "2.1.0"
+loader={path = "../loader"}

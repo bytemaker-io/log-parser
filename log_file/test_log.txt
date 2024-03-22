@@ -1,0 +1,6 @@
+2014/Oct/24 18:34:28.664833 mtc TESTCASE WCG10014_0020.ttcn:53(testcase:WCG100140020) Test case WCG100140020 started.
+2014/Oct/24 18:34:28.664868 mtc PARALLEL WCG10014_0020.ttcn:53(testcase:WCG100140020) Initializing variables, timers and ports of component type WcgTestCaseComponent.wcgTestCaseComponent inside testcase WCG100140020.
+2014/Oct/24 18:34:28.666455 mtc PORTEVENT WCG10014_0020.ttcn:53(testcase:WCG100140020) Port dnsInternalPort[0] was started.
+2014/Oct/24 18:34:28.666490 mtc PORTEVENT WCG10014_0020.ttcn:53(testcase:WCG100140020) Port dnsInternalPort[1] was started.
+2014/Oct/24 18:34:28.666506 mtc PORTEVENT WCG10014_0020.ttcn:53(testcase:WCG100140020) Port dnsInternalPort[2] was started.
+2014/Oct/24 18:34:28.666520 mtc PORTEVENT WCG10014_0020.ttcn:53(testcase:WCG100140020) Port dnsInternalPort[3] was started.
