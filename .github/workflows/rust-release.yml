@@ -1,79 +1,32 @@
-name: build
+name: Release
+
 on:
-  workflow_dispatch: {}
+  push:
+    tags:
+      - '*'
+
 jobs:
   build:
-    name: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        build: [linux, macos, windows]
-        include:
-          - build: linux
-            os: ubuntu-22.04
-            rust: nightly
-            target: x86_64-unknown-linux-musl
-            archive-name: launcher-linux.tar.gz
-          - build: macos
-            os: macos-latest
-            rust: nightly
-            target: x86_64-apple-darwin
-            archive-name: launcher-macos.tar.gz
-          - build: windows
-            os: windows-2019
-            rust: nightly-x86_64-msvc
-            target: x86_64-pc-windows-msvc
-            archive-name: launcher-windows.7z
-      fail-fast: false
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-          profile: minimal
-          override: true
-          target: ${{ matrix.target }}
+      # Add your build steps here
 
-      - name: Build binary
-        run: cargo build --verbose --release --target ${{ matrix.target }}
-        env:
-          RUST_BACKTRACE: 1
-
-      - name: Strip binary (linux and macos)
-        if: matrix.build == 'linux' || matrix.build == 'macos'
-        run: strip "target/${{ matrix.target }}/release/launcher"
-
-      - name: Build archive
+      - name: Archive code
+        run: tar czvf archive.tar.gz *
         shell: bash
-        run: |
-          mkdir archive
-          cd archive
-          if [ "${{ matrix.build }}" = "windows" ]; then
-            cp "../target/${{ matrix.target }}/release/launcher.exe" ./
-            7z a "${{ matrix.archive-name }}"  launcher.exe
-          else
-            cp "../target/${{ matrix.target }}/release/launcher" ./
-            tar -czf "${{ matrix.archive-name }}" launcher
-          fi
-      - name: Upload archive
-        uses: actions/upload-artifact@v1
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.archive-name }}
-          path: archive/${{ matrix.archive-name }}
-      - name: Set outputs
-        id: vars
-        run: echo "::set-output name=archive-name::${{ matrix.archive-name }}"    
+          name: archive
+          path: archive.tar.gz
 
   release:
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      repository-projects: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -81,7 +34,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: ${{ needs.build.outputs.archive-name }}
+          name: archive
           path: .
 
       - name: Set tag name
@@ -91,23 +44,18 @@ jobs:
           echo ::set-output name=TAG_NAME::${TAG_NAME}
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+        run: |
+          gh release create ${{ steps.prep.outputs.TAG_NAME }} \
+            --title "Release ${{ steps.prep.outputs.TAG_NAME }}" \
+            --notes "" \
+            --draft=false \
+            --prerelease=false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.prep.outputs.TAG_NAME }}
-          release_name: Release ${{ steps.prep.outputs.TAG_NAME }}
-          draft: false
-          prerelease: false
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
+        run: |
+          gh release upload ${{ steps.prep.outputs.TAG_NAME }} \
+            ./archive.tar.gz
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ needs.build.outputs.archive-name }}
-          asset_name: ${{ needs.build.outputs.archive-name }}
-          asset_content_type: application/gzip
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
