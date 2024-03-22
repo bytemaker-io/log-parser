@@ -1,9 +1,7 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -56,6 +54,6 @@ jobs:
       - name: Upload Release Asset
         run: |
           gh release upload ${{ steps.prep.outputs.TAG_NAME }} \
-            ./archive.tar.gz
+           archive.tar.gz
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
