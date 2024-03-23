@@ -9,9 +9,21 @@ To use Log Loader, follow the command structure below:
 ```bash
 log-loader [OPTIONS] --file-name <FILE_NAME>
 ```
+
+## Help
+```bash
+log-loader --help
+```
+## Build from source
+```bash
+git clone https://github.com/bytemaker-io/log-parser.git && cd log-parser
+cargo build --release
+```
 ## Example:
 ```bash
 ./launcher --file-names test_log.txt
+./launcher --file-names test_log.txt test-log2.txt
+
 ```
 ## Output:
 ```bash
