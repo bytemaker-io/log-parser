@@ -114,16 +114,12 @@ mod tests {
                 let timestamp = parts[0..2].join(" ");
             println!("Timestamp: {}", timestamp);
                 let _component_name = parts[2];
-
                 let _event_type = parts[3];
-
                 let message = parts[4..].join(" ");
                 let message_parts: Vec<&str> = message.split(".").collect();
                 let _peer_component = message_parts[0];
                 let _Event_description = message_parts[1].split(":").nth(0).unwrap(); // 提取以 ":" 为分割的第一个元素，即事件描述
                 let port_and_function= message_parts[1].split(":").nth(1).unwrap();
                 let _port=port_and_function.split("(").next().unwrap(); // 提取以 " " 为分割的第一个元素，即端口号
-
     }
-
 }
