@@ -20,6 +20,7 @@ git clone https://github.com/bytemaker-io/log-parser.git && cd log-parser
 cargo build --release
 ```
 ## Example:
+It supports multiple file names as well. We build it with multiple threads to handle multiple files at the same time.
 ```bash
 ./launcher --file-names test_log.txt
 ./launcher --file-names test_log.txt test-log2.txt
