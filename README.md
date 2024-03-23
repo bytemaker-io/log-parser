@@ -15,6 +15,18 @@ log-loader [OPTIONS] --file-name <FILE_NAME>
 ```
 ## Output:
 ```bash
+              _
+            /~_)                                                      /'
+        ~-/'-~                                                      /'
+        /'      ____     ____         ____     ,____     ____     /'          ____     O  ____
+      /'      /'    )--/'    )      /'    )   /'    )  /'    )  /' /'    /  /'    )--/' /'    )--
+ /~\,'   _  /'    /' /'    /'     /'    /'  /'    /' /'    /' /' /'    /'  '---,   /'  '---,
+(,/'`\____)(___,/'  (___,/(__    (___,/(__/'    /(__(___,/(__(__(___,/(__(___,/   (__(___,/
+                       /'                                          /'
+               /     /'                                    /     /'
+              (___,/'                                     (___,/'
+                                    Author: Fei Wang
+                                    Version: v1.0.0
 2024-03-23T16:03:47.766465Z  INFO ThreadId(10) launcher/src/main.rs:53: Checking the log file names and the path of the file...
 2024-03-23T16:03:47.766509Z  INFO ThreadId(10) launcher/src/main.rs:55: log file names: ["test_log.txt"]
 2024-03-23T16:03:47.766525Z  INFO ThreadId(10) launcher/src/main.rs:56: Path of the file: "log_file"
@@ -31,4 +43,5 @@ log-loader [OPTIONS] --file-name <FILE_NAME>
 2024-03-23T16:03:47.829393Z  INFO ThreadId(08) loader/src/data_loder.rs:37: Log item is 2014/Oct/24 18:34:38.950563 mtc PORTEVENT MsrpLayerComponent.ttcn:168(function:sendInternalMessage) Sent on msrpInternalPort[0] to 850 @variables.internalPortMessageWithMsrpMessages : {    internalMessage := {        description := "COMMAND_COMPONENT_STOP",        parameters := { }    },    msrpMessages := { }----------------Data frame is Some(DataFrame { time: "2014/Oct/24 18:34:38.950563", component: "mtc", peer_component: "MsrpLayerComponent", event_type: "PORTEVENT", event_description: "ttcn", port: 168, function_name: "function:sendInternalMessage", message: " Sent on msrpInternalPort[0] to 850 @variables" })
 
 ```
+
 
