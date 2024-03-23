@@ -7,12 +7,12 @@ Log Loader is a command-line program designed to load log files, parse them, and
 To use Log Loader, follow the command structure below:
 
 ```bash
-log-loader [OPTIONS] --file-name <FILE_NAME>
+launcher [OPTIONS] --file-name <FILE_NAME>
 ```
 
 ## Help
 ```bash
-log-loader --help
+launcher --help
 ```
 ## Build from source
 ```bash
