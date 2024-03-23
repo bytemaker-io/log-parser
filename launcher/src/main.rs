@@ -3,15 +3,15 @@
 mod launcher_params;
 
 
-use std::env::args;
-use std::error::Error;
-use std::thread::panicking;
-use clap::ArgAction::Version;
-use clap::builder::Str;
+
+
+
+
+
 use clap::Parser;
 use colored::Colorize;
 use tokio::task::JoinSet;
-use tracing::{error, info, Instrument, span};
+use tracing::{error, info};
 use tracing_subscriber::fmt::format::{Compact, DefaultFields,Format};
 
 use launcher_params::Args;
@@ -34,8 +34,8 @@ async fn main() {
         );
     }
     // let mut handle_vec = vec!();
-    while let Some(res)=set.join_next().await {
-
+    while let Some(handle) = set.join_next().await {
+        handle.unwrap();
     }
 }
 fn init()-> Result<Vec<String>,()>{
@@ -77,19 +77,9 @@ fn init()-> Result<Vec<String>,()>{
     Ok(file_vec)
 }
 fn print_banner(){
-    let banner= r#"              _
-            /~_)                                                      /'
-        ~-/'-~                                                      /'
-        /'      ____     ____         ____     ,____     ____     /'          ____     O  ____
-      /'      /'    )--/'    )      /'    )   /'    )  /'    )  /' /'    /  /'    )--/' /'    )--
- /~\,'   _  /'    /' /'    /'     /'    /'  /'    /' /'    /' /' /'    /'  '---,   /'  '---,
-(,/'`\____)(___,/'  (___,/(__    (___,/(__/'    /(__(___,/(__(__(___,/(__(___,/   (__(___,/
-                       /'                                          /'
-               /     /'                                    /     /'
-              (___,/'                                     (___,/'
-                                    Author: Fei Wang
-                                    Version: v1.0.0""#;
-    println!("{}",banner.color("red"));
+    //load banner from banner.txt，from current directory
+    let banner = std::fs::read_to_string("banner.txt").unwrap();
+    println!("{}", banner.color("blue"))
 }
 fn get_params() -> Args {
     Args::parse()
@@ -110,4 +100,30 @@ fn init_tracing() -> tracing_subscriber::fmt::Subscriber<DefaultFields, Format<C
         // Build the subscriber
         .finish();
     subscriber
+}
+
+#[cfg(test)]
+mod tests {
+    
+    
+    #[test]
+    fn test_data_loader() {
+        let log = "2014/Oct/24 19:16:44.305556 1709 EXECUTOR - TTCN Logger v2.2 options: TimeStampFormat:=DateTime; LogEntityName:=Yes; LogEventTypes:=Yes; SourceInfoFormat:=Single; *.FileMask:=ACTION | DEFAULTOP | ERROR | EXECUTOR | PARALLEL | TESTCASE | PORTEVENT | STATISTICS | TIMEROP | USER | VERDICTOP | WARNING; *.ConsoleMask:=TESTCASE | STATISTICS; LogFileSize:=0; LogFileNumber:=1; DiskFullAction:=Error";
+        println!("{}", log.contains("TIMEROP"));
+       let parts: Vec<&str> = log.split_whitespace().collect();
+                let timestamp = parts[0..2].join(" ");
+            println!("Timestamp: {}", timestamp);
+                let _component_name = parts[2];
+
+                let _event_type = parts[3];
+
+                let message = parts[4..].join(" ");
+                let message_parts: Vec<&str> = message.split(".").collect();
+                let _peer_component = message_parts[0];
+                let _Event_description = message_parts[1].split(":").nth(0).unwrap(); // 提取以 ":" 为分割的第一个元素，即事件描述
+                let port_and_function= message_parts[1].split(":").nth(1).unwrap();
+                let _port=port_and_function.split("(").next().unwrap(); // 提取以 " " 为分割的第一个元素，即端口号
+
+    }
+
 }

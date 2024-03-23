@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 tokio = "1.36.0"
 tracing = "0.1.40"
+regex = "1.10.3"
+log = "0.4.21"
