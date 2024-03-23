@@ -10,6 +10,7 @@ use clap::ArgAction::Version;
 use clap::builder::Str;
 use clap::Parser;
 use colored::Colorize;
+use tokio::task::JoinSet;
 use tracing::{error, info, Instrument, span};
 use tracing_subscriber::fmt::format::{Compact, DefaultFields,Format};
 
@@ -23,6 +24,19 @@ async fn main() {
         init()
     }).await.unwrap();
     let file_vec = x.unwrap();
+    info!("File vector: {:?}", file_vec);
+    let mut set = JoinSet::new();
+    for file in file_vec {
+        set.spawn(async move{
+            let data_loader = data_loder::new(file).await;
+            data_loader.read_file().await;
+        }
+        );
+    }
+    // let mut handle_vec = vec!();
+    while let Some(res)=set.join_next().await {
+
+    }
 }
 fn init()-> Result<Vec<String>,()>{
     let params =  {

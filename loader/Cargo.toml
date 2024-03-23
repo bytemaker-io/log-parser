@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 tokio = "1.36.0"
-
+tracing = "0.1.40"
