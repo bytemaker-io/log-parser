@@ -29,6 +29,7 @@ async fn main() {
     let duration = start.elapsed();
     info!("Time elapsed in processing all files is: {:?}", duration);
     info!("All files have been processed successfully");
+    info!("please check the output directory for the output files");
 }
 fn init() -> Result<Vec<String>, ()> {
     let params = {
