@@ -1,18 +1,36 @@
 #[derive(Debug)]
 pub struct DataFrame {
-    time:String,
-    component:String,
-    peer_component:String,
-    event_type:String,
-    event_description:String,
-    port:String,
-    function_name:String,
-    message:String,
+    time: String,
+    component: String,
+    peer_component: String,
+    event_type: String,
+    event_description: String,
+    port: String,
+    function_name: String,
+    message: String,
 }
 
 impl DataFrame {
-    pub fn new(time: String, component: String, peer_component: String, event_type: String, event_description: String, port: String, function_name: String, message: String) -> Self {
-        Self { time, component, peer_component, event_type, event_description, port, function_name, message }
+    pub fn new(
+        time: String,
+        component: String,
+        peer_component: String,
+        event_type: String,
+        event_description: String,
+        port: String,
+        function_name: String,
+        message: String,
+    ) -> Self {
+        Self {
+            time,
+            component,
+            peer_component,
+            event_type,
+            event_description,
+            port,
+            function_name,
+            message,
+        }
     }
 
     pub fn time(&self) -> &str {

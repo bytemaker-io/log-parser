@@ -1,10 +1,10 @@
-
 use clap::{arg, Parser};
 
-
 #[derive(Parser, Debug)]
-#[command(about = "This program is used to load the log file and parse it to frame the data. It will also upload the data to ElasticSearch.")]
-#[command(author="Fei wang")]
+#[command(
+    about = "This program is used to load the log file and parse it to frame the data. It will also upload the data to ElasticSearch."
+)]
+#[command(author = "Fei wang")]
 #[command(version)]
 #[command(name = "launcher")]
 pub struct Args {
@@ -15,4 +15,3 @@ pub struct Args {
     #[arg[short='p', long,default_value = "log_file"]]
     pub(crate) file_path: Option<String>,
 }
-
