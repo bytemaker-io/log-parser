@@ -1,9 +1,10 @@
+use std::io::Write;
 
-use regex::Regex;
 use tokio::io::{AsyncBufReadExt};
 use tracing::{info};
 
 use crate::data_frame;
+use crate::data_frame::DataFrame;
 
 
 pub struct data_loder {
@@ -16,69 +17,80 @@ impl data_loder {
             file
         }
     }
+    async fn write_to_file(&self,data_frame: &DataFrame) {
+        //写入output.txt文件
+        let x = self.file.split("/").last().unwrap().split(".").next().unwrap();
+        //create a file named x_output.txt
+        if !std::path::Path::new(&format!("{}_output.txt", x)).exists() {
+            std::fs::write(format!("{}_output.txt", x), "").unwrap();
+        }
+        let mut file = std::fs::OpenOptions::new().append(true).open(format!("{}_output.txt", x)).unwrap();
+        let data = format!("{:?}\n", data_frame);
+        if data_frame.message().contains("{") && data_frame.message().contains("}") {
+        //给开头写个1
+            file.write_all("Structured  ".as_bytes()).unwrap();
+        }
+        else{
+            file.write_all("Simple ".as_bytes()).unwrap();
+        }
+        file.write_all(data.as_bytes()).unwrap();
+    }
     pub async fn read_file(&self) -> Result<(), Box<dyn std::error::Error>> {
         info!("trying to read the file: {:?}", &self.file);
-        let file = tokio::fs::File::open(&self.file).await?;
+        let _file = tokio::fs::File::open(&self.file).await?;
         info!("file opened successfully, file path: {:?}", &self.file);
-        let mut reader = tokio::io::BufReader::new(file);
-        let mut buffer = String::new();
         info!("reader created successfully, file path: {:?}", &self.file);
         let mut str:String=String::new();
-        let _next_data_frame=String::new();
-        //在当前目录创建一个文件，名字加上之前的名字再加上output.txt
-        let output_file_name=&self.file.split("/").last().unwrap().to_string();
-        let _output_file_path=format!("{}output.txt",output_file_name);
-
-        while let Ok(n) = reader.read_line(&mut buffer).await {
-
-            if n == 0 &&str.len()>0 {
-                let option = self.parse(str.as_str()).await;
+        let string = tokio::fs::read_to_string(&self.file).await.unwrap();
+        //获取最后一行
+        for line in string.lines(){
+            //判断是否是最后一行
+            if line==string.lines().last().unwrap(){
+                str.push_str(&line);
+                let option = self.parse(&str).await;
                 if let Some(_data_frame) = &option {
-                    info!{"Log item is {}----------------Data frame is {:?}",str,option};
-
+                    // info!{"Log item is {}----------------Data frame is {:?}",str,_data_frame};
+                    self.write_to_file(_data_frame).await;
                 }
-                str.clear();
-
                 break;
             }
-            //delete the new line character
-            buffer.pop();
-            if self.do_frame(&buffer).await {
+            if self.do_frame(&line).await {
                 if str.len()==0 {
-                    str.push_str(buffer.clone().as_str());
+                    str.push_str(&line);
                 }
                 else{
-                    //It means that we have got the new data frame
-                    //parse the last data frame here,and then clear the str
-                    self.parse(str.as_str()).await;
-                    let option = self.parse(str.as_str()).await;
+                    let option = self.parse(&str).await;
                     if let Some(_data_frame) = &option {
-                        info!{"Log item is {}----------------Data frame is {:?}",str,option};
+                        self.write_to_file(_data_frame).await;
+                        // info!{"Log item is {}----------------Data frame is {:?}",str,_data_frame};
                     }
                     str.clear();
-                    str.push_str(buffer.clone().as_str());
+                    str.push_str(&line);
                 }
             }
             else if str.len()>0 {
-                str.push_str(buffer.clone().as_str());
+                str.push_str(&line);
             }
-            buffer.clear();
         }
+
         Ok(())
     }
-    pub async fn do_frame(&self, log_item:&str) -> bool
+    pub  async fn do_frame(&self, log_item:&str) -> bool
     {
-        // println!("log_item: {}", log_item);
-        let re = Regex::new(r"\d{4}/[A-Za-z]+/\d{2} \d{2}:\d{2}:\d{2}\.\d+").unwrap();
-        if let Some(_captures) = re.captures(log_item) {
-        return true;
+       //判断字符串是否以20开头，并且/后的字母为第一个大写，两个小写。例如2014/Oct/24 19:16:44.288792就满足要求，不要用正则
+        let x = log_item.split("/").next().unwrap();
+        if x.len()!=4 {
+            return false;
         }
-        return false;
+        let y = log_item.split("/").nth(1).unwrap();
+        if y.len()!=3 {
+            return false;
+        }
+        return true;
+
     }
     pub async fn parse(&self, log_item:&str) ->Option<data_frame::DataFrame>
     {
-
-
         let parts: Vec<&str> = log_item.split_whitespace().collect();
         let timestamp = parts[0..2].join(" ");
         let component_name = parts[2];
@@ -88,19 +100,22 @@ impl data_loder {
         }
         else if event_type=="PORTEVENT" && log_item.contains("-") {
             let message_body=parts[5..].join(" ");
-            let _data_frame=data_frame::DataFrame::new(timestamp.to_string(),component_name.to_string(),"".to_string(),event_type.to_string(),"".to_string(),0,"".to_string(),message_body.to_string());
+            let data_frame=data_frame::DataFrame::new(  timestamp.to_string(),component_name.to_string(),"".to_string(),event_type.to_string(),"".to_string(),"".to_string(),"".to_string(),message_body.to_string());
+            return Some(data_frame);
         }
         let message = parts[4..].join(" ");
         let message_parts: Vec<&str> = message.split(".").collect();
+
         let peer_component = message_parts[0];
         let Event_description = message_parts[1].split(":").nth(0).unwrap(); // 提取以 ":" 为分割的第一个元素，即事件描述
         let port_and_function= message_parts[1].split(":").nth(1).unwrap();
         let port=port_and_function.split("(").next().unwrap(); // 提取以 " " 为分割的第一个元素，即端口号
         let function_name=message_parts[1].split(")").nth(0).unwrap().split("(").nth(1).unwrap();
-        let message_body=message_parts[1].split(")").nth(1).unwrap(); // 提取以 " " 为分割的第一个元素，即函数名
-        let data_frame=data_frame::DataFrame::new(timestamp.to_string(),component_name.to_string(),peer_component.to_string(),event_type.to_string(),Event_description.to_string(),port.parse::<i32>().unwrap(),function_name.to_string(),message_body.to_string());
-        return Some(data_frame);
 
+        let mut message_body =message_parts[1].split(")").nth(1).unwrap();
+
+        let data_frame=data_frame::DataFrame::new(timestamp.to_string(),component_name.to_string(),peer_component.to_string(),event_type.to_string(),Event_description.to_string(),port.to_string(),function_name.to_string(),message_body.to_string());
+        return Some(data_frame);
     }
 }
 

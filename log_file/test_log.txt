@@ -1,12 +1,1 @@
-2014/Oct/24 19:16:44.286604 mtc TESTCASE WCG10014_0624.ttcn:34(testcase:WCG100140624) Test case WCG100140624 started.
-2014/Oct/24 19:16:44.286652 mtc PARALLEL WCG10014_0624.ttcn:34(testcase:WCG100140624) Initializing variables, timers and ports of component type WcgTestCaseComponent.wcgTestCaseComponent inside testcase WCG100140624.
-2014/Oct/24 19:16:44.288749 mtc PORTEVENT WCG10014_0624.ttcn:34(testcase:WCG100140624) Port dnsInternalPort[0] was started.
-2014/Oct/24 19:16:44.288792 mtc PORTEVENT WCG10014_0624.ttcn:34(testcase:WCG100140624) Port dnsInternalPort[1] was started.
-2014/Oct/24 18:34:38.950664 mtc TIMEROP MsrpLayerComponent.ttcn:213(function:receiveInternalMessage) Start timer TimerTestCaseInternalCommunicationGuard: 185 s
-2014/Oct/24 18:34:38.950563 mtc PORTEVENT MsrpLayerComponent.ttcn:168(function:sendInternalMessage) Sent on msrpInternalPort[0] to 850 @variables.internalPortMessageWithMsrpMessages : {
-    internalMessage := {
-        description := "COMMAND_COMPONENT_STOP",
-        parameters := { }
-    },
-    msrpMessages := { }
-}
+2014/Oct/24 18:49:42.367165 mtc PORTEVENT WCG10014_0201.ttcn:84(testcase:WCG100140201) Port sipInternalPort[0] was stopped.

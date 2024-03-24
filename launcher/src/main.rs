@@ -34,9 +34,14 @@ async fn main() {
         );
     }
     // let mut handle_vec = vec!();
+    //计时
+    let start = std::time::Instant::now();
     while let Some(handle) = set.join_next().await {
         handle.unwrap();
     }
+    let duration = start.elapsed();
+    info!("Time elapsed in processing all files is: {:?}", duration);
+    info!("All files have been processed successfully");
 }
 fn init()-> Result<Vec<String>,()>{
     let params =  {
@@ -61,7 +66,7 @@ fn init()-> Result<Vec<String>,()>{
     //file names is a vector,check each file is exist or not
     let mut file_vec:Vec<String>=vec!();
     for file_name in &params.file_names {
-        let file = format!("{}/{}/{}", current_dir.display(), &params.file_path.as_ref().unwrap(), file_name);
+        let file = format!("{}/{}", &params.file_path.as_ref().unwrap(), file_name);
         info!("File path is: {:?}", file);
         //check the file is exist or not
         if !std::path::Path::new(&file).exists() {
@@ -102,24 +107,4 @@ fn init_tracing() -> tracing_subscriber::fmt::Subscriber<DefaultFields, Format<C
     subscriber
 }
 
-#[cfg(test)]
-mod tests {
-    
-    
-    #[test]
-    fn test_data_loader() {
-        let log = "2014/Oct/24 19:16:44.305556 1709 EXECUTOR - TTCN Logger v2.2 options: TimeStampFormat:=DateTime; LogEntityName:=Yes; LogEventTypes:=Yes; SourceInfoFormat:=Single; *.FileMask:=ACTION | DEFAULTOP | ERROR | EXECUTOR | PARALLEL | TESTCASE | PORTEVENT | STATISTICS | TIMEROP | USER | VERDICTOP | WARNING; *.ConsoleMask:=TESTCASE | STATISTICS; LogFileSize:=0; LogFileNumber:=1; DiskFullAction:=Error";
-        println!("{}", log.contains("TIMEROP"));
-       let parts: Vec<&str> = log.split_whitespace().collect();
-                let timestamp = parts[0..2].join(" ");
-            println!("Timestamp: {}", timestamp);
-                let _component_name = parts[2];
-                let _event_type = parts[3];
-                let message = parts[4..].join(" ");
-                let message_parts: Vec<&str> = message.split(".").collect();
-                let _peer_component = message_parts[0];
-                let _Event_description = message_parts[1].split(":").nth(0).unwrap(); // 提取以 ":" 为分割的第一个元素，即事件描述
-                let port_and_function= message_parts[1].split(":").nth(1).unwrap();
-                let _port=port_and_function.split("(").next().unwrap(); // 提取以 " " 为分割的第一个元素，即端口号
-    }
-}
+
