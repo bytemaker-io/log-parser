@@ -7,7 +7,7 @@ use tracing::{error, info};
 use tracing_subscriber::fmt::format::{Compact, DefaultFields, Format};
 
 use launcher_params::Args;
-use loader::data_loder::data_loder;
+use loader::data_loder::DataLoader;
 
 #[tokio::main]
 async fn main() {
@@ -17,8 +17,8 @@ async fn main() {
     let mut set = JoinSet::new();
     for file in file_vec {
         set.spawn(async move {
-            let data_loader = data_loder::new(file).await;
-            data_loader.read_file().await;
+            let data_loader = DataLoader::new(file).await;
+            let _ = data_loader.read_file().await;
         });
     }
     //caculate the time elapsed in processing all files

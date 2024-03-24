@@ -1,19 +1,18 @@
 use std::fs::File;
 use std::io::Write;
 
-use tokio::io::AsyncBufReadExt;
 use tracing::info;
 
 use crate::data_frame;
 use crate::data_frame::DataFrame;
 
-pub struct data_loder {
+pub struct DataLoader {
     pub file: String,
 }
 
-impl data_loder {
-    pub async fn new(file: String) -> data_loder {
-        data_loder { file }
+impl DataLoader {
+    pub async fn new(file: String) -> DataLoader {
+        DataLoader { file }
     }
     async fn create_dir_and_file(&self) -> File {
         //if the output directory does not exist, create it
@@ -135,7 +134,7 @@ impl data_loder {
         let message_parts: Vec<&str> = message.split(".").collect();
 
         let peer_component = message_parts[0];
-        let Event_description = message_parts[1].split(":").nth(0).unwrap();
+        let event_description = message_parts[1].split(":").nth(0).unwrap();
         let port_and_function = message_parts[1].split(":").nth(1).unwrap();
         let port = port_and_function.split("(").next().unwrap();
         let function_name = message_parts[1]
@@ -146,14 +145,14 @@ impl data_loder {
             .nth(1)
             .unwrap();
 
-        let mut message_body = message_parts[1].split(")").nth(1).unwrap();
+        let message_body = message_parts[1].split(")").nth(1).unwrap();
 
         let data_frame = data_frame::DataFrame::new(
             timestamp.to_string(),
             component_name.to_string(),
             peer_component.to_string(),
             event_type.to_string(),
-            Event_description.to_string(),
+            event_description.to_string(),
             port.to_string(),
             function_name.to_string(),
             message_body.to_string(),
