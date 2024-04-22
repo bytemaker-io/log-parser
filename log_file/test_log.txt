@@ -1,1 +1,0 @@
-2014/Oct/24 18:49:42.367165 mtc PORTEVENT WCG10014_0201.ttcn:84(testcase:WCG100140201) Port sipInternalPort[0] was stopped.

@@ -1,0 +1,75 @@
+2014/Oct/24 18:34:30.935339 857 PORTEVENT msrpInterface.ttcn:343(function:processCommand) Sent on msrpInternalPort to mtc @variables.internalPortMessageWithMsrpMessages : {
+    internalMessage := {
+        description := "COMPONENT_DONE_WITH_SUCCESS",
+        parameters := {
+            {
+                parameterName := "COMMAND_EXECUTED",
+                parameterValue := "COMMAND_MSRP_EXPECT_MESSAGE"
+            }
+        }
+    },
+    msrpMessages := {
+        {
+            request := {
+                requestStart := {
+                    transactId := "oytq79ez",
+                    method := "SEND"
+                },
+                headers := {
+                    toPath := {
+                        {
+                            msrpScheme := "msrp",
+                            authority := {
+                                userinfo := omit,
+                                host := "142.133.150.169",
+                                portField := "17077"
+                            },
+                            sessionId := "SessionId18VAT",
+                            transport := "tcp",
+                            uriParameter := omit
+                        }
+                    },
+                    fromPath := {
+                        {
+                            msrpScheme := "msrp",
+                            authority := {
+                                userinfo := omit,
+                                host := "142.133.142.3",
+                                portField := "6060"
+                            },
+                            sessionId := "rFhqxHwhogoX",
+                            transport := "tcp",
+                            uriParameter := omit
+                        }
+                    },
+                    header := {
+                        messageId := "83VXAA1G",
+                        successReport := omit,
+                        failureReport := omit,
+                        byteRange := {
+                            rangeStart := 1,
+                            rangeEnd := "296",
+                            total := "296"
+                        },
+                        status := omit,
+                        extHeader := omit
+                    }
+                },
+                contentStuff := {
+                    otherMimeHeader := omit,
+                    contentType := {
+                        typeX := "message",
+                        subtype := "cpim",
+                        genParam := omit
+                    },
+                    data := "To: <sip:anonymous@anonymous.invalid>\r\nFrom: <sip:anonymous@anonymous.invalid>\r\nDateTime: 2014-10-24T22:34:29+00:00\r\nNS: imdn <urn:ietf:params:imdn>\r\nimdn.Disposition-Notification: positive-delivery\r\nimdn.Message-ID: 83VXAA1G\r\n\r\nContent-Type: text/plain\r\n\r\nBody message 10014002007 to 10014002006",
+                    binary_message := '546F3A203C7369703A616E6F6E796D6F757340616E6F6E796D6F75732E696E76616C69643E0D0A46726F6D3A203C7369703A616E6F6E796D6F757340616E6F6E796D6F75732E696E76616C69643E0D0A4461746554696D653A20323031342D31302D32345432323A33343A32392B30303A30300D0A4E533A20696D646E203C75726E3A696574663A706172616D733A696D646E3E0D0A696D646E2E446973706F736974696F6E2D4E6F74696669636174696F6E3A20706F7369746976652D64656C69766572790D0A696D646E2E4D6573736167652D49443A2038335658414131470D0A0D0A436F6E74656E742D547970653A20746578742F706C61696E0D0A0D0A426F6479206D65737361676520313030313430303230303720746F203130303134303032303036'O ("To: <sip:anonymous@anonymous.invalid>\r\nFrom: <sip:anonymous@anonymous.invalid>\r\nDateTime: 2014-10-24T22:34:29+00:00\r\nNS: imdn <urn:ietf:params:imdn>\r\nimdn.Disposition-Notification: positive-delivery\r\nimdn.Message-ID: 83VXAA1G\r\n\r\nContent-Type: text/plain\r\n\r\nBody message 10014002007 to 10014002006")
+                },
+                endLine := {
+                    transactId := "oytq79ez",
+                    continuationFlag := "$"
+                }
+            }
+        }
+    }
+}

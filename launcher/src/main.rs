@@ -21,7 +21,7 @@ async fn main() {
             let _ = data_loader.read_file().await;
         });
     }
-    //caculate the time elapsed in processing all files
+    //calculate the time elapsed in processing all files
     let start = std::time::Instant::now();
     while let Some(handle) = set.join_next().await {
         handle.unwrap();

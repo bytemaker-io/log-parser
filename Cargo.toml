@@ -1,5 +1,5 @@
 [workspace]
-members = ["launcher", "loader"]
+members = ["launcher", "loader", "mytest"]
 
 # Config for 'cargo dist'
 [workspace.metadata.dist]
