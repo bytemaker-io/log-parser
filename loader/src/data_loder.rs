@@ -354,9 +354,7 @@ fn print_json_value(value: &Value, indent_level: usize, file: &mut File) {
 
 fn print_json(json_str: &str, file: &mut File) -> serde_json::Result<()> {
     let json_value: Value = serde_json::from_str(json_str)?;
-
     file.write_all("Root:\n".as_bytes()).unwrap();
     print_json_value(&json_value, 1,file);
-
     Ok(())
 }
