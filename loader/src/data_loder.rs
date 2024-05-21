@@ -1,6 +1,7 @@
 use serde_json::{json, to_string_pretty};
 use std::collections::HashSet;
 use std::fs::File;
+use std::io;
 use std::io::Write;
 use std::ptr::null;
 use regex::Regex;
@@ -330,31 +331,78 @@ async fn convert_to_json(text: String) -> String {
     lines.join("\n")
 }
 
-fn print_json_value(value: &Value, indent_level: usize, file: &mut File) {
-    match value {
-        Value::Object(map) => {
-            for (key, value) in map {
-                file.write_all(format!("{}Key: {}\n", " ".repeat(indent_level * 4), key).as_bytes()).unwrap();
-                file.write_all(format!("{}Value:\n", " ".repeat(indent_level * 4)).as_bytes()).unwrap();
-                print_json_value(value, indent_level + 1,file);
-            }
-        }
-        Value::Array(arr) => {
-            for (index, value) in arr.iter().enumerate() {
-                file.write_all(format!("{}Index: {}\n", " ".repeat(indent_level * 4), index).as_bytes()).unwrap();
-                file.write_all(format!("{}Value:\n", " ".repeat(indent_level * 4)).as_bytes()).unwrap();
-                print_json_value(value, indent_level + 1,file);
-            }
-        }
-        _ => {
-            file.write_all(format!("{}{}\n", " ".repeat(indent_level * 4), value).as_bytes()).unwrap();
-        }
+#[derive(Debug)]
+enum PrintJsonError {
+    Io(io::Error),
+    Json(serde_json::Error),
+}
+
+impl From<io::Error> for PrintJsonError {
+    fn from(err: io::Error) -> Self {
+        PrintJsonError::Io(err)
     }
 }
 
-fn print_json(json_str: &str, file: &mut File) -> serde_json::Result<()> {
+impl From<serde_json::Error> for PrintJsonError {
+    fn from(err: serde_json::Error) -> Self {
+        PrintJsonError::Json(err)
+    }
+}
+
+fn print_json_value(value: &Value, indent_level: usize, file: &mut File) -> Result<(), PrintJsonError> {
+    let indent = " ".repeat(indent_level * 4);
+    match value {
+        Value::Object(map) => {
+            if map.is_empty() {
+                writeln!(file, "{}Empty Object", indent)?;
+            } else {
+                for (key, val) in map {
+                    writeln!(file, "{}Key: {}", indent, key)?;
+                    writeln!(file, "{}Value:", indent)?;
+                    print_json_value(val, indent_level + 1, file)?;
+                }
+            }
+        },
+        Value::Array(arr) => {
+            if arr.is_empty() {
+                writeln!(file, "{}Empty Array", indent)?;
+            } else {
+                writeln!(file, "{}(type: Array)", indent)?;
+                for (index, val) in arr.iter().enumerate() {
+                    writeln!(file, "{}Index: {}", indent, index)?;
+                    print_json_value(val, indent_level + 1, file)?;
+                }
+            }
+        },
+        Value::String(s) => {
+            let type_label = infer_type(s);
+            writeln!(file, "{}{} (type: {})", indent, s, type_label)?;
+        },
+        _ => {
+            writeln!(file, "{}{}", indent, value)?;
+        }
+    }
+    Ok(())
+}
+
+fn infer_type(value: &str) -> &str {
+    if value.is_empty() {
+        "Null"
+    } else if let Ok(_) = value.parse::<i64>() {
+        "Integer"
+    } else if let Ok(_) = value.parse::<f64>() {
+        "Float"
+    } else if value == "true" || value == "false" {
+        "Boolean"
+    } else {
+        "String"
+    }
+}
+
+
+fn print_json(json_str: &str, file: &mut File) -> Result<(), PrintJsonError> {
     let json_value: Value = serde_json::from_str(json_str)?;
-    file.write_all("Root:\n".as_bytes()).unwrap();
-    print_json_value(&json_value, 1,file);
+    writeln!(file, "Root:")?;
+    print_json_value(&json_value, 1, file)?;
     Ok(())
 }
