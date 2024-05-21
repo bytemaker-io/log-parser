@@ -11,7 +11,10 @@ use loader::data_loder::DataLoader;
 
 #[tokio::main]
 async fn main() {
+
     let tokio = tokio::task::spawn_blocking(|| init()).await.unwrap();
+
+
     let file_vec = tokio.unwrap();
     info!("File vector: {:?}", file_vec);
     let mut set = JoinSet::new();
