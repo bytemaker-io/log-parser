@@ -387,7 +387,7 @@ fn print_json_value(value: &Value, indent_level: usize, file: &mut File) -> Resu
 
 fn infer_type(value: &str) -> &str {
     if value.is_empty() {
-        "Null"
+        "Empty String"
     } else if let Ok(_) = value.parse::<i64>() {
         "Integer"
     } else if let Ok(_) = value.parse::<f64>() {
